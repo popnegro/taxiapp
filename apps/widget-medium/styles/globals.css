@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
+
+* { box-sizing: border-box; }
+body {
+  font-family: 'Sora', sans-serif;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  min-height: 100vh;
+}
+
+.vehicle-card {
+  transition: all 0.2s ease;
+}
+.vehicle-card:hover {
+  transform: translateY(-2px);
+}
+.vehicle-card.selected {
+  transform: translateY(-2px);
+}

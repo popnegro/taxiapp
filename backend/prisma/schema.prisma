@@ -1,0 +1,51 @@
+// backend/prisma/schema.prisma
+// Production-ready schema — replace in-memory store when scaling beyond MVP
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  orderNumber     String    @unique
+  customerName    String
+  customerPhone   String
+  originAddress   String
+  originLat       Float?
+  originLng       Float?
+  destAddress     String
+  destLat         Float?
+  destLng         Float?
+  vehicleType     String    @default("standard")
+  status          String    @default("pending")
+  estimatedPrice  Int?
+  estimatedMinutes Int?
+  scheduledAt     DateTime?
+  notes           String?
+  rating          Int?
+  driverId        String?
+  driver          Driver?   @relation(fields: [driverId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Driver {
+  id          String   @id @default(uuid())
+  name        String
+  phone       String
+  vehicle     String
+  plate       String
+  vehicleType String   @default("standard")
+  rating      Float    @default(5.0)
+  lat         Float?
+  lng         Float?
+  available   Boolean  @default(true)
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

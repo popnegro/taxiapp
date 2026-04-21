@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "buildCommand": "turbo run build",
+  "projects": [
+    {
+      "name": "taxiapp-dashboard",
+      "rootDirectory": "apps/dashboard",
+      "framework": "nextjs",
+      "env": {
+        "NEXT_PUBLIC_BACKEND_URL": "@taxiapp-backend-url"
+      }
+    },
+    {
+      "name": "taxiapp-widget-simple",
+      "rootDirectory": "apps/widget-simple",
+      "framework": "nextjs",
+      "env": {
+        "NEXT_PUBLIC_BACKEND_URL": "@taxiapp-backend-url",
+        "NEXT_PUBLIC_WHATSAPP_NUMBER": "@taxiapp-whatsapp-number"
+      }
+    },
+    {
+      "name": "taxiapp-widget-medium",
+      "rootDirectory": "apps/widget-medium",
+      "framework": "nextjs",
+      "env": {
+        "NEXT_PUBLIC_BACKEND_URL": "@taxiapp-backend-url"
+      }
+    },
+    {
+      "name": "taxiapp-widget-pro",
+      "rootDirectory": "apps/widget-pro",
+      "framework": "nextjs",
+      "env": {
+        "NEXT_PUBLIC_BACKEND_URL": "@taxiapp-backend-url"
+      }
+    }
+  ]
+}

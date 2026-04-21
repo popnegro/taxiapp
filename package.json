@@ -1,0 +1,26 @@
+{
+  "name": "taxiapp-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:dashboard": "cd apps/dashboard && npm run dev",
+    "dev:widget-simple": "cd apps/widget-simple && npm run dev",
+    "dev:widget-medium": "cd apps/widget-medium && npm run dev",
+    "dev:widget-pro": "cd apps/widget-pro && npm run dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
