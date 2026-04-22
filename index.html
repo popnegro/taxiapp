@@ -57,7 +57,7 @@
         
         <div class="pt-4 space-y-4">
             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Acceso Usuarios</p>
-            <div class="g_id_signin" data-type="standard" data-shape="pill" data-size="large" data-width="100%"></div>
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-size="large" data-width="100%"></div> 
             
             <a href="https://wa.me/5492613871088" class="w-full bg-black text-white py-5 rounded-2xl text-[12px] font-black uppercase tracking-widest text-center block">
                 Contactar Central 24/7
@@ -596,18 +596,32 @@
     <script>
         // Sincronizar número de WhatsApp desde la configuración centralizada (/api/config)
         async function syncWhatsAppLinks() {
+            let googleClientId = "TU_ID_CLIENTE_POR_DEFECTO"; // Fallback
             try {
                 const res = await fetch('/api/config');
-                const config = await res.json();
-                if (config.whatsappNumber) {
-                    // Busca y actualiza todos los enlaces de WhatsApp en la navegación, menú móvil y footer
-                    document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
-                        link.href = `https://wa.me/${config.whatsappNumber}`;
-                    });
+                if (res.ok) {
+                    const config = await res.json();
+                    if (config.whatsappNumber) {
+                        document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
+                            link.href = `https://wa.me/${config.whatsappNumber}`;
+                        });
+                    }
+                    googleClientId = config.googleClientId || googleClientId;
                 }
             } catch (e) { console.error("Error sincronizando enlaces de WhatsApp:", e); }
+            // Actualizar Google One Tap Client ID
+            document.getElementById('g_id_onload').setAttribute('data-client_id', googleClientId);
         }
         syncWhatsAppLinks();
+
+        // Registro del Service Worker para modo offline
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('[PWA] Service Worker registrado con éxito'))
+                    .catch(err => console.error('[PWA] Error al registrar SW:', err));
+            });
+        }
     </script>
 </body>
 

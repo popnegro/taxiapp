@@ -1,9 +1,15 @@
 /**
  * WaaS CORE SYSTEM - Mendoza 2026
- * Refactored for High-Performance & Telemetry
+ * Refactored for High-Performance & Telemetry & Centralized Config
  */
 
 const RATES = { flag: 1200, km: 650 }; // Precios Mendoza 2026
+
+function calculateFare(distanceInMeters, rates) {
+    const distanceKm = distanceInMeters / 1000;
+    const calculatedFare = Math.round(rates.flag + (distanceKm * rates.km));
+    return Math.max(calculatedFare, rates.flag);
+}
 
 const AGENCIES = {
     "senorial": {
@@ -82,10 +88,14 @@ async function applyBranding() {
         const res = await fetch('/api/config');
         if (res.ok) {
             const config = await res.json();
-            if (config.whatsappNumber) {
-                CURRENT_AGENCY.phone = config.whatsappNumber;
-                console.log(`[SYSTEM] WhatsApp actualizado desde API: ${CURRENT_AGENCY.phone}`);
+            // Actualizar solo las propiedades que vienen de la API
+            CURRENT_AGENCY.phone = config.whatsappNumber || CURRENT_AGENCY.phone;
+            CURRENT_AGENCY.color = config.brandColor || CURRENT_AGENCY.color;
+            // Convertir objeto de bounds de Google a string compatible con Nominatim
+            if (config.mendozaBounds) {
+                CURRENT_AGENCY.bounds = `${config.mendozaBounds.west},${config.mendozaBounds.south},${config.mendozaBounds.east},${config.mendozaBounds.north}`;
             }
+            // Object.assign(RATES, config.rates); // Fusionar tarifas
         }
     } catch (e) {
         console.warn("[SYSTEM] Usando número de WhatsApp por defecto (fallback)");
@@ -155,8 +165,7 @@ async function initMapWithRoute() {
         
         L.geoJSON(route.geometry, { style: { color: 'black', weight: 5 } }).addTo(map);
         
-        const distanceKm = route.distance / 1000;
-        orderData.price = Math.round(RATES.flag + (distanceKm * RATES.km));
+        orderData.price = calculateFare(route.distance, RATES);
         document.getElementById('display-price').innerText = `$${orderData.price}`;
         
         const bounds = L.geoJSON(route.geometry).getBounds();
