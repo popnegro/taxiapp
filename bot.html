@@ -168,10 +168,18 @@
 </div>
 
 <script>
+<<<<<<< HEAD
     let MENDOZA_BOUNDS = { north: -32.75, south: -33.10, west: -68.95, east: -68.70 };
 
     let step = 1;
     let whatsappNumber = "5492613871088"; // Default
+=======
+    const API_KEY = "AIzaSyAmTzHBhtQ4E8BG6DL0xdrEOYdZmQEBXkI"; 
+    const WHATSAPP_NUMBER = "5492613871088"; 
+    const MENDOZA_BOUNDS = { north: -32.75, south: -33.10, west: -68.95, east: -68.70 };
+
+    let step = 1;
+>>>>>>> parent of 6b7d621 (Up env)
     const chat = document.getElementById('chat-content');
     const originInput = document.getElementById('origin');
     const destInput = document.getElementById('destination');
@@ -179,6 +187,7 @@
     const wsBtn = document.getElementById('ws-btn');
     const successLayer = document.getElementById('success-layer');
 
+<<<<<<< HEAD
     async function initApp() {
         let mapsKey = ""; 
         try {
@@ -199,6 +208,15 @@
         });
 
         await google.maps.importLibrary("geocoding");
+=======
+    // Carga de API
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.type="text/javascript";a.async=true;m.head.append(a)}));d[l]?console.warn(p+" only loads once. Re-trying:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+        key: API_KEY, v: "weekly"
+    });
+
+    async function initApp() {
+        const { Geocoder } = await google.maps.importLibrary("geocoding");
+>>>>>>> parent of 6b7d621 (Up env)
         initAutocomplete();
         
         if (navigator.geolocation) {
@@ -268,7 +286,7 @@
             addMessage('bot', `🚕 Tarifa: $${precio}\nDistancia: ${data.distance.text}`);
             
             const text = encodeURIComponent(`🚕 *TAXIGO MENDOZA*\n📍 *Origen:* ${originInput.value}\n🏁 *Destino:* ${destInput.value}\n💰 *Tarifa:* $${precio}`);
-            wsBtn.href = `https://wa.me/${whatsappNumber}?text=${text}`;
+            wsBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
             wsBtn.style.display = 'block';
         }
     }

@@ -85,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedName) document.getElementById('userName').value = savedName;
 });
 
+<<<<<<< HEAD
 async function applyBranding() {
     try {
         const res = await fetch('assets/config.json');
@@ -98,6 +99,9 @@ async function applyBranding() {
     } catch (e) {
         console.warn("[SYSTEM] Usando número de WhatsApp por defecto (fallback)");
     }
+=======
+function applyBranding() {
+>>>>>>> parent of 6b7d621 (Up env)
     document.title = `${CURRENT_AGENCY.name} | Mendoza`;
     document.documentElement.style.setProperty('--primary', CURRENT_AGENCY.color);
     // Un solo loop para todos los elementos con la clase agency-name
