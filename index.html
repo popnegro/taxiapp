@@ -594,10 +594,10 @@
 
     <script src="./assets/main.js"></script>
     <script>
-        // Sincronizar número de WhatsApp desde la configuración centralizada (/api/config)
+        // Sincronizar número de WhatsApp desde la configuración centralizada (/assets/config)
         async function syncWhatsAppLinks() {
             try {
-                const res = await fetch('/api/config');
+                const res = await fetch('/assets/config');
                 const config = await res.json();
                 if (config.whatsappNumber) {
                     // Busca y actualiza todos los enlaces de WhatsApp en la navegación, menú móvil y footer

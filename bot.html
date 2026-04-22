@@ -136,8 +136,8 @@
         .hidden { display: none !important; }
     </style>
 </head>
-<script src="./assets/main.js"></script>
-<script src="../assets/main.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="assets/main.js"></script>
 <body>
 
 <div id="taxi-widget">
@@ -168,8 +168,7 @@
 </div>
 
 <script>
-    let MENDOZA_BOUNDS = { north: -32.75, south: -33.10, west: -68.95, east: -68.70 }; // Default
-    let RATES = { flag: 1200, km: 650 }; // Default
+    let MENDOZA_BOUNDS = { north: -32.75, south: -33.10, west: -68.95, east: -68.70 };
 
     let step = 1;
     let whatsappNumber = "5492613871088"; // Default
@@ -183,13 +182,12 @@
     async function initApp() {
         let mapsKey = ""; 
         try {
-            const res = await fetch('/api/config');
-            if (res.ok) { // Solo procesar si la respuesta es OK
+            const res = await fetch('assets/config.json');
+            if (res.ok) {
                 const config = await res.json();
                 mapsKey = config.mapsKey || mapsKey;
                 whatsappNumber = config.whatsappNumber || whatsappNumber;
                 MENDOZA_BOUNDS = config.mendozaBounds || MENDOZA_BOUNDS;
-                RATES = config.rates || RATES;
             }
         } catch (e) {
             console.warn("[SYSTEM] Usando configuración de respaldo:", e.message);
@@ -200,35 +198,21 @@
             key: mapsKey, v: "weekly"
         });
 
-        const { Geocoder } = await google.maps.importLibrary("geocoding");
+        await google.maps.importLibrary("geocoding");
         initAutocomplete();
         
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (pos) => {
-                const geocoder = new Geocoder();
-                const { results } = await geocoder.geocode({ location: { lat: pos.coords.latitude, lng: pos.coords.longitude } });
+                const { results } = await new google.maps.Geocoder().geocode({ location: { lat: pos.coords.latitude, lng: pos.coords.longitude } });
                 if (results[0]) {
                     originInput.value = results[0].formatted_address;
                     addMessage('user', `Origen: ${results[0].formatted_address}`);
                     askDest();
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const geocoder = new Geocoder();
-                    const { results } = await geocoder.geocode({ 
-                        location: { lat: position.coords.latitude, lng: position.coords.longitude } 
-                    });
-                    if (results[0]) {
-                        originInput.value = results[0].formatted_address;
-                        addMessage('user', `Origen: ${results[0].formatted_address}`);
-                        askDest();
-                    }
-                },
-                () => { 
-                    originInput.placeholder = "📍 Escribe tu dirección de origen";
-                    addMessage('bot', 'No pude detectar tu ubicación exacta. Por favor, escríbela abajo.');
                 }
+            }, () => { 
+                originInput.placeholder = "📍 Escribe tu dirección de origen";
+                addMessage('bot', 'No pude detectar tu ubicación exacta. Por favor, escríbela abajo.');
             });
-            );
         }
     }
 

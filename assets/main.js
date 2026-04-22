@@ -3,6 +3,14 @@
  * Refactored for High-Performance & Telemetry
  */
 
+/**
+ * Calcula la tarifa en base a la distancia (metros) y los parámetros de la agencia
+ */
+const calculateFare = (distanceInMeters, rates) => {
+    const distanceKm = distanceInMeters / 1000;
+    return Math.round(rates.flag + (distanceKm * rates.km));
+};
+
 const RATES = { flag: 1200, km: 650 }; // Precios Mendoza 2026
 
 const AGENCIES = {
@@ -71,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Telemetry.init();
     applyBranding();
     renderPartners();
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     
     const savedName = localStorage.getItem('user_name');
     if (savedName) document.getElementById('userName').value = savedName;
@@ -79,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function applyBranding() {
     try {
-        const res = await fetch('/api/config');
+        const res = await fetch('assets/config.json');
         if (res.ok) {
             const config = await res.json();
             if (config.whatsappNumber) {
@@ -155,8 +163,7 @@ async function initMapWithRoute() {
         
         L.geoJSON(route.geometry, { style: { color: 'black', weight: 5 } }).addTo(map);
         
-        const distanceKm = route.distance / 1000;
-        orderData.price = Math.round(RATES.flag + (distanceKm * RATES.km));
+        orderData.price = calculateFare(route.distance, RATES);
         document.getElementById('display-price').innerText = `$${orderData.price}`;
         
         const bounds = L.geoJSON(route.geometry).getBounds();
@@ -186,7 +193,7 @@ function changeStep(s) {
     dots.forEach((dot, i) => {
         dot.className = (i === s-1) ? "step-dot w-6 h-1.5 rounded-full bg-black" : "step-dot w-1.5 h-1.5 rounded-full bg-black/20";
     });
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function renderPartners() {
