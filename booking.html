@@ -5,31 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taxi Widget - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/tailwindcss">
+    <style>
         /* Configuración de marca dinámica */
         :root {
             --brand-primary: #FFD600; /* Amarillo Mendoza por defecto */
             --brand-dark: #0f172a;
         }
-        @layer base {
-            body { @apply bg-slate-50 antialiased text-slate-900; }
+        body {
+            background-color: rgb(248, 250, 252);
+            text-rendering: optimizeLegibility;
+            color: rgb(15, 23, 42);
         }
         .btn-primary {
             background-color: var(--brand-primary);
-            @apply text-black font-black uppercase tracking-tighter py-4 px-6 rounded-xl transition-all active:scale-95 shadow-lg shadow-yellow-500/20;
+            color: black;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.2);
+        }
+        .btn-primary:active {
+            transform: scale(0.95);
         }
         .input-field {
-            @apply w-full p-4 bg-white border-2 border-slate-100 rounded-xl text-lg outline-none focus:border-[var(--brand-primary)] transition-colors placeholder:text-slate-400;
+            width: 100%;
+            padding: 1rem;
+            background-color: white;
+            border: 2px solid rgb(226, 232, 240);
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: var(--brand-primary);
+        }
+        .input-field::placeholder {
+            color: rgb(148, 163, 184);
         }
         .icon-btn {
-            @apply absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-black transition-colors;
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.5rem;
+            color: rgb(148, 163, 184);
+            transition: color 0.3s ease;
+        }
+        .icon-btn:hover {
+            color: black;
         }
         .loader-dots {
-            @apply flex gap-1 justify-center items-center h-6;
+            display: flex;
+            gap: 0.25rem;
+            justify-content: center;
+            align-items: center;
+            height: 1.5rem;
         }
     </style>
 </head>
-<script src="./assets/main.js"></script>
+<script src="../assets/main.js"></script>
 <body class="flex items-center justify-center min-h-screen p-4">
 
     <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-slate-200/50 p-6 border border-slate-100">
