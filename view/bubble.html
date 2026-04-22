@@ -142,11 +142,19 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.372.0/dist/umd/lucide.min.js"></script>
 
+<<<<<<< HEAD
     <script>
         const CONFIG = {
             rates: { flag: 1200, km: 650 },
             agency: { phone: "5492610000000", bounds: "-68.9000,-33.0500,-68.7500,-32.8000" }
         };
+=======
+    <script>        
+        let CONFIG = { // Inicializar con valores por defecto
+            rates: { flag: 1200, km: 650 }, 
+            agency: { phone: "5492610000000", bounds: "-68.9000,-33.0500,-68.7500,-32.8000" } 
+        }; 
+>>>>>>> parent of a161ac9 (Test)
 
         let map, routeLayer, orderData = { start: null, end: null, price: 0 };
 
@@ -160,6 +168,19 @@
             }
         }
 
+<<<<<<< HEAD
+=======
+        async function loadConfig() {
+            try {
+                const res = await fetch('/api/config');
+                if (res.ok) {
+                    const apiConfig = await res.json();
+                    CONFIG = { rates: apiConfig.rates || CONFIG.rates, agency: { phone: apiConfig.whatsappNumber || CONFIG.agency.phone, bounds: `${apiConfig.mendozaBounds.west},${apiConfig.mendozaBounds.south},${apiConfig.mendozaBounds.east},${apiConfig.mendozaBounds.north}` || CONFIG.agency.bounds } };
+                }
+            } catch (e) { console.warn("Error cargando configuración para bubble widget:", e); }
+        }
+
+>>>>>>> parent of a161ac9 (Test)
         function initMiniMap() {
             if(map) return;
             map = L.map('mini-map', { zoomControl: false, attributionControl: false }).setView([-32.8895, -68.8458], 13);
@@ -213,6 +234,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+<<<<<<< HEAD
+=======
+            loadConfig(); // Cargar configuración al inicio
+>>>>>>> parent of a161ac9 (Test)
             lucide.createIcons();
         });
     </script>
