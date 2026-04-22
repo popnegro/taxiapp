@@ -150,9 +150,6 @@
 </div>
 
 <script>
-    // --- CONFIGURACIÓN ---
-    const API_KEY = "AIzaSyAmTzHBhtQ4E8BG6DL0xdrEOYdZmQEBXkI"; 
-    const WHATSAPP_NUMBER = "5492610000000"; // Reemplazar con el número real de Mendoza
     
     // Bounds para Gran Mendoza (Luján, Maipú, Capital, Guaymallén, Godoy Cruz, Las Heras)
     const MENDOZA_BOUNDS = {
@@ -163,6 +160,7 @@
     };
 
     let step = 1;
+    let whatsappNumber = "5492610000000";
     let originPlace, destPlace;
     
     // DOM Elements
@@ -172,13 +170,18 @@
     const nextBtn = document.getElementById('next-btn');
     const wsBtn = document.getElementById('ws-btn');
 
-    // --- CARGA DINÁMICA DE GOOGLE MAPS ---
-    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.type="text/javascript";a.async=true;m.head.append(a)}));d[l]?console.warn(p+" only loads once. Re-trying:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
-        key: API_KEY, v: "weekly"
-    });
-
     async function initApp() {
         try {
+            const res = await fetch('/api/config');
+            const config = await res.json();
+            const mapsKey = config.mapsKey;
+            whatsappNumber = config.whatsappNumber || whatsappNumber;
+
+            // --- CARGA DINÁMICA DE GOOGLE MAPS ---
+            (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.type="text/javascript";a.async=true;m.head.append(a)}));d[l]?console.warn(p+" only loads once. Re-trying:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>dl)})({
+                key: mapsKey, v: "weekly"
+            });
+
             const { Geocoder } = await google.maps.importLibrary("geocoding");
             initAutocomplete();
             
@@ -291,7 +294,7 @@
                      `💰 *Tarifa Est.:* $${price}\n\n` +
                      `Confirmar pedido por favor.`;
         
-        wsBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+        wsBtn.href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
         wsBtn.style.display = 'block';
     }
 

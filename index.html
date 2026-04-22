@@ -593,6 +593,22 @@
 </section>
 
     <script src="./assets/main.js"></script>
+    <script>
+        // Sincronizar número de WhatsApp desde la configuración centralizada (/api/config)
+        async function syncWhatsAppLinks() {
+            try {
+                const res = await fetch('/api/config');
+                const config = await res.json();
+                if (config.whatsappNumber) {
+                    // Busca y actualiza todos los enlaces de WhatsApp en la navegación, menú móvil y footer
+                    document.querySelectorAll('a[href^="https://wa.me/"]').forEach(link => {
+                        link.href = `https://wa.me/${config.whatsappNumber}`;
+                    });
+                }
+            } catch (e) { console.error("Error sincronizando enlaces de WhatsApp:", e); }
+        }
+        syncWhatsAppLinks();
+    </script>
 </body>
 
 </html>

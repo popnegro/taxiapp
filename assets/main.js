@@ -77,7 +77,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedName) document.getElementById('userName').value = savedName;
 });
 
-function applyBranding() {
+async function applyBranding() {
+    try {
+        const res = await fetch('/api/config');
+        const config = await res.json();
+        if (config.whatsappNumber) {
+            CURRENT_AGENCY.phone = config.whatsappNumber;
+            console.log(`[SYSTEM] WhatsApp actualizado desde API: ${CURRENT_AGENCY.phone}`);
+        }
+    } catch (e) {
+        console.warn("[SYSTEM] Usando número de WhatsApp por defecto (fallback)");
+    }
     document.title = `${CURRENT_AGENCY.name} | Mendoza`;
     document.documentElement.style.setProperty('--primary', CURRENT_AGENCY.color);
     // Un solo loop para todos los elementos con la clase agency-name
