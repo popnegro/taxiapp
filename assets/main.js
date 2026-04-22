@@ -80,10 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function applyBranding() {
     try {
         const res = await fetch('/api/config');
-        const config = await res.json();
-        if (config.whatsappNumber) {
-            CURRENT_AGENCY.phone = config.whatsappNumber;
-            console.log(`[SYSTEM] WhatsApp actualizado desde API: ${CURRENT_AGENCY.phone}`);
+        if (res.ok) {
+            const config = await res.json();
+            if (config.whatsappNumber) {
+                CURRENT_AGENCY.phone = config.whatsappNumber;
+                console.log(`[SYSTEM] WhatsApp actualizado desde API: ${CURRENT_AGENCY.phone}`);
+            }
         }
     } catch (e) {
         console.warn("[SYSTEM] Usando número de WhatsApp por defecto (fallback)");

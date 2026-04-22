@@ -173,9 +173,13 @@
     async function initApp() {
         try {
             const res = await fetch('/api/config');
-            const config = await res.json();
-            const mapsKey = config.mapsKey;
-            whatsappNumber = config.whatsappNumber || whatsappNumber;
+            let mapsKey = "AIzaSyAmTzHBhtQ4E8BG6DL0xdrEOYdZmQEBXkI";
+            
+            if (res.ok) {
+                const config = await res.json();
+                mapsKey = config.mapsKey || mapsKey;
+                whatsappNumber = config.whatsappNumber || whatsappNumber;
+            }
 
             // --- CARGA DINÁMICA DE GOOGLE MAPS ---
             (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.type="text/javascript";a.async=true;m.head.append(a)}));d[l]?console.warn(p+" only loads once. Re-trying:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>dl)})({
