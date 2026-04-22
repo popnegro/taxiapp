@@ -173,7 +173,7 @@
     async function initApp() {
         try {
             const res = await fetch('/api/config');
-            let mapsKey = "AIzaSyAmTzHBhtQ4E8BG6DL0xdrEOYdZmQEBXkI";
+            let mapsKey = "";
             
             if (res.ok) {
                 const config = await res.json();

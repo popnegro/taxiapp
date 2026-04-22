@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Mendoza - Reserva Inteligente</title>
+    <link rel="preconnect" href="https://maps.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <style>
+        :root {
+            --primary: #fbc02d;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --accent: #25D366;
+            --text: #333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: #f0f2f5; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        #taxi-widget {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative; /* Para la pantalla de éxito absoluta */
+        }
+
+        .chat-header { 
+            background: var(--primary); 
+            padding: 20px; 
+            text-align: center; 
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .chat-body { 
+            height: 400px; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
+            background: #ffffff;
+        }
+
+        .bubble { 
+            max-width: 85%; 
+            padding: 12px 16px; 
+            border-radius: 18px; 
+            font-size: 14px; 
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .bot { background: var(--light); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
+        .user { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
+
+        .input-area { 
+            padding: 20px; 
+            background: #fff;
+            border-top: 1px solid #eee; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            min-height: 150px;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 14px; 
+            border: 2px solid #eee; 
+            border-radius: 12px; 
+            font-size: 16px;
+            outline: none;
+        }
+
+        .btn { 
+            background: var(--dark); 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-ws { 
+            background: var(--accent); 
+            color: white; 
+            text-decoration: none; 
+            text-align: center; 
+            display: none; 
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* PANTALLA DE ÉXITO */
+        #success-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 10;
+            display: none; /* Se activa por JS */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .icon-check { font-size: 64px; color: var(--accent); margin-bottom: 20px; }
+        .success-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+        .success-text { color: #666; font-size: 0.95rem; margin-bottom: 30px; line-height: 1.4; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="taxi-widget">
+    <div class="chat-header">🚕 Central Mendoza</div>
+    
+    <div class="chat-body" id="chat-content">
+        <div class="bubble bot">¡Hola! Soy tu asistente de viajes. Estoy detectando tu ubicación en Mendoza...</div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="origin" placeholder="📍 Buscando ubicación...">
+        <input type="text" id="destination" class="hidden" placeholder="🏁 ¿A dónde vas?">
+        <button class="btn" id="next-btn">Continuar</button>
+        <a href="#" class="btn-ws" id="ws-btn" target="_blank">Confirmar en WhatsApp</a>
+    </div>
+
+    <div id="success-layer">
+        <span class="material-symbols-outlined icon-check">check_circle</span>
+        <h2 class="success-title">¡Pedido en camino!</h2>
+        <p class="success-text">
+            Hemos abierto WhatsApp para que coordines con el chofer. <br>
+            <strong>ID de Seguimiento: <span id="lead-id">...</span></strong>
+        </p>
+        <button class="btn" onclick="location.reload()" style="background: #eee; color: #333; width: 100%;">
+            Pedir otro Taxi
+        </button>
+    </div>
+</div>
+
+<script>
+    const MENDOZA_BOUNDS = { north: -32.75, south: -33.10, west: -68.95, east: -68.70 };
+
+    let step = 1;
+    let whatsappNumber = "5492613871088"; 
+    const chat = document.getElementById('chat-content');
+    const originInput = document.getElementById('origin');
+    const destInput = document.getElementById('destination');
+    const nextBtn = document.getElementById('next-btn');
+    const wsBtn = document.getElementById('ws-btn');
+    const successLayer = document.getElementById('success-layer');
+
+    async function initApp() {
+        let mapsKey = ""; 
+        try {
+            const res = await fetch('/api/config');
+            if (res.ok) {
+                const config = await res.json();
+                mapsKey = config.mapsKey || mapsKey;
+                whatsappNumber = config.whatsappNumber || whatsappNumber;
+            }
+        } catch (e) {
+            console.warn("[SYSTEM] Usando configuración de respaldo:", e.message);
+        }
+
+        // Carga de API dinámica
+        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.type="text/javascript";a.async=true;m.head.append(a)}));d[l]?console.warn(p+" only loads once. Re-trying:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>dl)})({
+            key: mapsKey, v: "weekly"
+        });
+
+        const { Geocoder } = await google.maps.importLibrary("geocoding");
+        initAutocomplete();
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const geocoder = new Geocoder();
+                const { results } = await geocoder.geocode({ location: { lat: pos.coords.latitude, lng: pos.coords.longitude } });
+                if (results[0]) {
+                    originInput.value = results[0].formatted_address;
+                    addMessage('user', `Origen: ${results[0].formatted_address}`);
+                    askDest();
+                }
+            });
+        }
+    }
+
+    async function initAutocomplete() {
+        const { Autocomplete } = await google.maps.importLibrary("places");
+        const options = { fields: ["formatted_address"], componentRestrictions: { country: "ar" }, bounds: MENDOZA_BOUNDS, strictBounds: true };
+        new Autocomplete(originInput, options);
+        new Autocomplete(destInput, options);
+    }
+
+    function addMessage(sender, text) {
+        const div = document.createElement('div');
+        div.className = `bubble ${sender}`;
+        div.innerText = text;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function askDest() {
+        step = 2;
+        addMessage('bot', '¿A dónde quieres ir en Mendoza?');
+        originInput.classList.add('hidden');
+        destInput.classList.remove('hidden');
+        destInput.focus();
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (step === 1 && originInput.value) {
+            addMessage('user', originInput.value);
+            askDest();
+        } else if (step === 2 && destInput.value) {
+            addMessage('user', destInput.value);
+            calculate();
+        }
+    });
+
+    async function calculate() {
+        const { DistanceMatrixService } = await google.maps.importLibrary("routes");
+        destInput.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        addMessage('bot', 'Calculando tarifa...');
+
+        const service = new DistanceMatrixService();
+        const response = await service.getDistanceMatrix({
+            origins: [originInput.value],
+            destinations: [destInput.value],
+            travelMode: google.maps.TravelMode.DRIVING,
+        });
+
+        const data = response.rows[0].elements[0];
+        if (data.status === "OK") {
+            const precio = (1200 + (parseFloat(data.distance.text) * 150)).toFixed(0);
+            addMessage('bot', `🚕 Tarifa: $${precio}\nDistancia: ${data.distance.text}`);
+            
+            const text = encodeURIComponent(`🚕 *TAXIGO MENDOZA*\n📍 *Origen:* ${originInput.value}\n🏁 *Destino:* ${destInput.value}\n💰 *Tarifa:* $${precio}`);
+            wsBtn.href = `https://wa.me/${whatsappNumber}?text=${text}`;
+            wsBtn.style.display = 'block';
+        }
+    }
+
+    // --- MEJORA: CAPTURA DEL LEAD ANTES DE SALIR ---
+    wsBtn.addEventListener('click', (e) => {
+        // Generar un ID de lead aleatorio
+        const leadId = Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('lead-id').innerText = leadId;
+        
+        // Pequeño delay para asegurar que el click de WhatsApp se dispare antes de cubrir la pantalla
+        setTimeout(() => {
+            successLayer.style.display = 'flex';
+        }, 500);
+    });
+
+    initApp();
+</script>
+</body>
+</html>

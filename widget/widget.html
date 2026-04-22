@@ -97,7 +97,7 @@
                     appConfig = await res.json();
                 }
                 
-                const mapsKey = appConfig.mapsKey || "AIzaSyAmTzHBhtQ4E8BG6DL0xdrEOYdZmQEBXkI";
+                const mapsKey = appConfig.mapsKey || "";
                 
                 const script = document.createElement('script');
                 script.src = `https://maps.googleapis.com/maps/api/js?key=${mapsKey}&libraries=places`;
