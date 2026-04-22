@@ -187,6 +187,7 @@
             });
 
             const { Geocoder } = await google.maps.importLibrary("geocoding");
+            console.log("[SYSTEM] Google Maps: Geocoding library loaded successfully.");
             initAutocomplete();
             
             // Geolocalización Automática
@@ -216,6 +217,7 @@
 
     async function initAutocomplete() {
         const { Autocomplete } = await google.maps.importLibrary("places");
+        console.log("[SYSTEM] Google Maps: Places library loaded successfully.");
         const options = {
             fields: ["formatted_address", "geometry"],
             types: ["address"],
@@ -259,6 +261,7 @@
 
     async function calculateTrip() {
         const { DistanceMatrixService } = await google.maps.importLibrary("routes");
+        console.log("[SYSTEM] Google Maps: Routes library loaded successfully.");
         destInput.style.display = 'none';
         nextBtn.style.display = 'none';
         addMessage('bot', 'Calculando tarifa estimada y disponibilidad...');
