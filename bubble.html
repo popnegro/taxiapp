@@ -141,7 +141,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@0.372.0/dist/umd/lucide.min.js"></script>
-    <script src="./assets/main.js"></script>
+    <script src="../assets/main.js"></script>
 
     <script>        
         let CONFIG = { // Inicializar con valores por defecto
@@ -163,8 +163,6 @@
 
         async function loadConfig() {
             try {
-                const res = await fetch('../api/config');
-                if (res.ok) {
                     const apiConfig = await res.json();
                     CONFIG = { rates: apiConfig.rates || CONFIG.rates, agency: { phone: apiConfig.whatsappNumber || CONFIG.agency.phone, bounds: `${apiConfig.mendozaBounds.west},${apiConfig.mendozaBounds.south},${apiConfig.mendozaBounds.east},${apiConfig.mendozaBounds.north}` || CONFIG.agency.bounds } };
                 }
